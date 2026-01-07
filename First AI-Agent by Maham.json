@@ -1,0 +1,195 @@
+{
+  "name": "First AI-Agent by Maham",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "4e41a13e-a52b-46fd-b85c-ebdd475a05b4",
+      "name": "When chat message received",
+      "webhookId": "bf46115d-4883-4cb3-b4a7-09de53518a4a"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a helpful assistant. When the user asks for an image, use the Image_Generator tool. After the tool provides a URL, you must show it to the user as an image using this format: ![Image](URL).After the image, also provide the raw URL link so I can click it"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "eb79b560-d9a3-4645-94f3-131db13f059e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        208
+      ],
+      "id": "f722f4ec-6b14-4e37-bd8c-1cb43544cfd4",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolWikipedia",
+      "typeVersion": 1,
+      "position": [
+        368,
+        208
+      ],
+      "id": "ea84d643-70cc-4617-a0e6-09cb9182d984",
+      "name": "Wikipedia"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.1-8b-instant",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        80,
+        208
+      ],
+      "id": "e9d3a822-fc0f-4345-b070-4dbea1e1ffc3",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "iRUHTFWNZ9EknuWz",
+          "name": "Groq account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Search the internet for current events and information.",
+        "url": "=https://api.duckduckgo.com/?q={{ $json.query }}&format=json&no_html=1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        464,
+        304
+      ],
+      "id": "a865c21a-514f-4a6c-b278-48861c5fca54",
+      "name": "GoogleSearch"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Use this tool to generate an image. It returns a URL.After the image, also provide the raw URL link so I can click it.",
+        "url": "=https://image.pollinations.ai/prompt/{{ $json.query }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3,
+      "position": [
+        560,
+        400
+      ],
+      "id": "1c1e2042-7f1f-4879-ab05-a90919ad1a0f",
+      "name": "Image_Generator"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wikipedia": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "GoogleSearch": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image_Generator": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "8afec094-c714-4cdf-a4f5-8baae9a894a5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f091a3e90b21e94ead422c79c598db5177a93713e7b45a15427228c42732cdb9"
+  },
+  "id": "CEgUQINWyKaaFMuRRszY5",
+  "tags": []
+}
